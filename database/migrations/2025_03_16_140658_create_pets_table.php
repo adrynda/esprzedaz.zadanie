@@ -12,7 +12,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('name');
-            $table->enum('difficulty', ['available', 'pending', 'sold']);
+            $table->enum('status', ['available', 'pending', 'sold']);
         });
     }
 

@@ -2,48 +2,65 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\PetService;
+use App\Validators\PetValidator;
 use Illuminate\Http\Request;
 
 class PetController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        // dd($request);
-        return response()->json('adasd', 400);
+    public function __construct(
+        private readonly PetService $petService,
+    ) {
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function findByStatus(Request $request, PetValidator $petValidator)
+    {
+        return response()->json(
+            $this->petService->findByStatus(
+                $petValidator->validStatusQuery($request),
+            ),
+            200,
+        );
+    }
+
+    public function store(Request $request, PetValidator $petValidator)
+    {
+        return response()->json(
+            $this->petService->create(
+                $petValidator->validPayload($request),
+            ),
+            201,
+        );
+    }
+
+    public function show(Request $request, PetValidator $petValidator)
+    {
+        return response()->json(
+            $this->petService->getById(
+                $petValidator->validPetId($request),
+            ),
+            200,
+        );
+    }
+
+    public function update(Request $request, PetValidator $petValidator)
+    {
+        return response()->json(
+            $this->petService->update(
+                $petValidator->validPayload($request),
+            ),
+            200,
+        );
+    }
+
+    public function customUpdate(Request $request, PetValidator $petValidator)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function destroy(Request $request, PetValidator $petValidator)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $this->petService->remove($petId);
+        return response()->json(null, 204);
     }
 }
