@@ -8,18 +8,9 @@ use App\Models\Category;
 use App\Models\Pet;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class PetService
 {
-    public function uploadImage(): void
-    {
-
-    }
-
     public function create(array $payload): Pet
     {
         $pet = new Pet();

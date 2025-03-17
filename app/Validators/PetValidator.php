@@ -4,6 +4,7 @@ namespace App\Validators;
 
 use App\Enums\PetStatusEnum;
 use App\DTOs\PetCustomUpdateDTO;
+use App\DTOs\PetUploadImageDTO;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as MadeValidator;
 use Illuminate\Validation\Rule;
@@ -80,7 +81,6 @@ class PetValidator
     public function validCustomUpdate(): PetCustomUpdateDTO
     {
         $petId = $this->validPetId();
-
         $payload = $this->readRequestData();
 
         $validator = Validator::make(
@@ -94,6 +94,29 @@ class PetValidator
         $this->validate($validator, 'Invalid input', 405);
 
         return new PetCustomUpdateDTO($petId, $payload);
+    }
+
+    public function validUploadImage(): PetUploadImageDTO
+    {
+        $petId = $this->validPetId();
+        $payload = $this->readRequestData();
+        $files = $this->request->files->all();
+
+        $validator = Validator::make(
+            array_merge($payload, $files),
+            [
+                'additionalMetadata' => 'string',
+                'file' => 'required|file',
+            ],
+        );
+
+        $this->validate($validator, 'Invalid input', 405);
+
+        return new PetUploadImageDTO(
+            $petId,
+            $payload['additionalMetadata'] ?? null,
+            $files['file'],
+        );
     }
 
     private function validPetId(): int

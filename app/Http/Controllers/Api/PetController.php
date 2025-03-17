@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Services\PetService;
+use App\Services\PhotoUrlService;
 use App\Validators\PetValidator;
 use Illuminate\Http\Request;
 
@@ -63,6 +64,16 @@ class PetController
         return response()->json(
             $this->petService->update(
                 $this->petValidator->validUpdate(),
+            ),
+            200,
+        );
+    }
+
+    public function uploadImage(PhotoUrlService $photoUrlService)
+    {
+        return response()->json(
+            $photoUrlService->uploadImage(
+                $this->petValidator->validUploadImage(),
             ),
             200,
         );
