@@ -68,7 +68,7 @@ class PetService
     {
         $pet = Pet::getById($id);
 
-        foreach ($pet->photoUrls() as $photoUrl) {
+        foreach ($pet->photoUrls()->get() as $photoUrl) {
             if (file_exists($photoUrl->name)) {
                 unlink($photoUrl->name);
             }

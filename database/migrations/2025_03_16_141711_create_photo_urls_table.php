@@ -12,7 +12,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->foreignId('pet_id')->constrained('pets');
             $table->string('name');
-            $table->string('additional_metadata');
+            $table->string('additional_metadata')->nullable();
         });
     }
 

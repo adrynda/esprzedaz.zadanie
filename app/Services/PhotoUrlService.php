@@ -9,27 +9,34 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PhotoUrlService
 {
-    private const PHOTOS_DIRECTORY = './pets/photos';
+    private const PHOTOS_DIRECTORY = 'pets/photos';
 
     public function uploadImage(PetUploadImageDTO $petUploadImageDTO): PhotoUrl
     {
         $photoUrl = new PhotoUrl();
+
         $photoUrl->pet_id = $petUploadImageDTO->petId;
         $photoUrl->name = $this->uploadFile($petUploadImageDTO);
-        if (!empty($petUploadImageDTO->additionalMetadta)) {
-            $photoUrl->additional_metadta = $petUploadImageDTO->additionalMetadta;
+        if (!empty($petUploadImageDTO->additionalMetadata)) {
+            $photoUrl->additional_metadata = $petUploadImageDTO->additionalMetadata;
         }
-        d($photoUrl);
+        
         $photoUrl->save();
-dd('asd');
+        
         return $photoUrl;
     }
 
     private function uploadFile(PetUploadImageDTO $petUploadImageDTO): string
     {
+        $filename = sprintf(
+            '%s_%s',
+            $petUploadImageDTO->file->getBasename(),
+            $petUploadImageDTO->file->getClientOriginalName(),
+        );
         $destinationPath = self::PHOTOS_DIRECTORY . '/' . $petUploadImageDTO->petId;
-        $petUploadImageDTO->file->move($destinationPath, $petUploadImageDTO->file->getClientOriginalName());
-        dd('asd');
-        return $destinationPath . '/' . $petUploadImageDTO->file->getClientOriginalName();
+
+        $petUploadImageDTO->file->move($destinationPath, $filename);
+
+        return $destinationPath . '/' . $filename;
     }
 }
