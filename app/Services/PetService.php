@@ -60,6 +60,14 @@ class PetService
         return Pet::where('status', '=', $petStatus->value)->get();
     }
 
+    public function findByTags(array $tags): Collection
+    {
+        return Pet::whereHas('tags', function ($query) use ($tags) {
+                $query->whereIn('name', $tags);
+            })
+            ->get();
+    }
+
     public function getById(int $id): Pet
     {
         return Pet::getById($id);

@@ -34,6 +34,29 @@ class PetValidator
         return PetStatusEnum::from($query['status']);
     }
 
+    public function validFindByTagsQuery(): array
+    {
+        $tags = array_filter(
+            explode(
+                ',',
+                $this->request->query()['tags'] ?? '',
+            ),
+        );
+
+        $validator = Validator::make(
+            [
+                'tags' => $tags,
+            ],
+            [
+                'tags.*' => 'required|string|exists:tags,name',
+            ],
+        );
+
+        $this->validate($validator, 'Invalid tag value', 400);
+
+        return $tags;
+    }
+
     public function validStore(): array
     {
         return $this->validPayload();

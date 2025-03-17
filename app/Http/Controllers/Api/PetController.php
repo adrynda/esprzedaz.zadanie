@@ -25,6 +25,19 @@ class PetController
         );
     }
 
+    /**
+     * @deprecated Takie oznaczenie widniało w dokumentacji
+     */
+    public function findByTags()
+    {
+        return response()->json(
+            $this->petService->findByTags(
+                $this->petValidator->validFindByTagsQuery(),
+            ),
+            200,
+        );
+    }
+
     public function store()
     {
         return response()->json(
