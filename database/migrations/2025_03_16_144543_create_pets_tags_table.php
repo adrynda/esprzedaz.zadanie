@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pets_tags', function (Blueprint $table) {
-            $table->foreignId('pet_id')->constrained('pets');
-            $table->foreignId('tag_id')->constrained('tags');
+            $table->foreignId('pet_id')->constrained('pets')->onDelete('cascade');
+            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
         });
     }
     public function down(): void

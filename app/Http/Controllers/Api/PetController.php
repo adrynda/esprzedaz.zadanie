@@ -10,57 +10,61 @@ class PetController
 {
     public function __construct(
         private readonly PetService $petService,
+        private readonly Request $request,
+        private readonly PetValidator $petValidator,
     ) {
     }
 
-    public function findByStatus(Request $request, PetValidator $petValidator)
+    public function findByStatus()
     {
         return response()->json(
             $this->petService->findByStatus(
-                $petValidator->validStatusQuery($request),
+                $this->petValidator->validFindByStatusQuery(),
             ),
             200,
         );
     }
 
-    public function store(Request $request, PetValidator $petValidator)
+    public function store()
     {
         return response()->json(
             $this->petService->create(
-                $petValidator->validPayload($request),
+                $this->petValidator->validStore(),
             ),
             201,
         );
     }
 
-    public function show(Request $request, PetValidator $petValidator)
+    public function show()
     {
         return response()->json(
             $this->petService->getById(
-                $petValidator->validPetId($request),
+                $this->petValidator->validShow(),
             ),
             200,
         );
     }
 
-    public function update(Request $request, PetValidator $petValidator)
+    public function update()
     {
         return response()->json(
             $this->petService->update(
-                $petValidator->validPayload($request),
+                $this->petValidator->validUpdate(),
             ),
             200,
         );
     }
 
-    public function customUpdate(Request $request, PetValidator $petValidator)
+    public function customUpdate()
     {
         //
     }
 
-    public function destroy(Request $request, PetValidator $petValidator)
+    public function destroy()
     {
-        $this->petService->remove($petId);
+        $this->petService->remove(
+            $this->petValidator->validDestroy(),
+        );
         return response()->json(null, 204);
     }
 }

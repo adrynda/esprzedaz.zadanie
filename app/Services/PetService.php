@@ -6,6 +6,7 @@ use App\Enums\PetStatusEnum;
 use App\Models\Category;
 use App\Models\Pet;
 use App\Models\Tag;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -36,23 +37,9 @@ class PetService
         return $pet;
     }
 
-    public function findByStatus(PetStatusEnum $petStatus): array
+    public function findByStatus(PetStatusEnum $petStatus): Collection
     {
-        return Pet::where('status', '=', $petStatus->value)->findAll();
-    }
-
-    private function fillPetModel(Pet &$pet, array $payload): void
-    {
-        $pet->category_id = Category::find($payload['category']['id'])->id;
-        $pet->name = $payload['name'];
-        $pet->status = PetStatusEnum::from($payload['status'])->value;
-        $pet->save();
-
-        $tagIds = [];
-        foreach ($payload['tags'] as $tagPayload) {
-            $tagIds[] = Tag::find($tagPayload['id'])?->id;
-        }
-        $pet->tags()->sync(array_filter($tagIds));
+        return Pet::where('status', '=', $petStatus->value)->get();
     }
 
     public function getById(int $id): Pet
@@ -73,5 +60,19 @@ class PetService
         }
 
         $pet->delete();
+    }
+
+    private function fillPetModel(Pet &$pet, array $payload): void
+    {
+        $pet->category_id = Category::find($payload['category']['id'])->id;
+        $pet->name = $payload['name'];
+        $pet->status = PetStatusEnum::from($payload['status'])->value;
+        $pet->save();
+
+        $tagIds = [];
+        foreach ($payload['tags'] as $tagPayload) {
+            $tagIds[] = Tag::find($tagPayload['id'])?->id;
+        }
+        $pet->tags()->sync(array_filter($tagIds));
     }
 }

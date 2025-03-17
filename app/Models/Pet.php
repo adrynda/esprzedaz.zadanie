@@ -19,7 +19,7 @@ class Pet extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
-    public function photoUrls(): array
+    public function photoUrls(): HasMany
     {
         return $this->hasMany(PhotoUrl::class, 'pet_id', 'id');
     }

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PhototUrl extends Model
+class PhotoUrl extends Model
 {
-    public const FILE_DIR = './pet/photos/'
+    public const FILE_DIR = './pet/photos/';
 
     protected $table = 'photo_urls';
 

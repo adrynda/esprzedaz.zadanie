@@ -4,6 +4,7 @@ namespace App\Validators;
 
 use App\Enums\PetStatusEnum;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as MadeValidator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
@@ -11,9 +12,50 @@ use SimpleXMLElement;
 
 class PetValidator
 {
-    public function validPetId(Request $request): int
+    public function __construct(
+        private readonly Request $request,
+    ) {
+    }
+
+    public function validFindByStatusQuery(): PetStatusEnum
     {
-        $petId = $request->route()->parameters['petId'] ?? '';
+        $query = $this->request->query();
+
+        $validator = Validator::make(
+            $query,
+            [
+                'status' => ['required', Rule::in(PetStatusEnum::cases())],
+            ],
+        );
+
+        $this->validate($validator, 'Invalid status value', 400);
+
+        return PetStatusEnum::from($query['status']);
+    }
+
+    public function validStore(): array
+    {
+        return $this->validPayload();
+    }
+
+    public function validUpdate(): array
+    {
+        return $this->validPayload(true);
+    }
+
+    public function validShow(): int
+    {
+        return $this->validPetId();
+    }
+
+    public function validDestroy(): int
+    {
+        return $this->validPetId();
+    }
+
+    private function validPetId(): int
+    {
+        $petId = $this->request->route()->parameters['petId'] ?? '';
 
         $this->validPetIdType($petId);
         $this->validPetIdExists($petId);
@@ -21,11 +63,11 @@ class PetValidator
         return $petId;
     }
 
-    public function validPayload(Request $request): array
+    private function validPayload(bool $validateId = false): array
     {
-        $payload = $this->readRequestData($request);
+        $payload = $this->readRequestData();
 
-        if ($request->getMethod() === 'PUT') {
+        if ($validateId) {
             $this->validPetIdType($payload['id'] ?? '');
             $this->validPetIdExists($payload['id'] ?? '');
         }
@@ -42,31 +84,9 @@ class PetValidator
             ],
         );
 
-        if ($validator->fails()) {
-            throw new HttpResponseException(
-                response()->json(
-                    [
-                        'message' => 'Invalid input',
-                        'code' => 405,
-                        'errors' => $validator->errors(),
-                    ],
-                    405,
-                ),
-            );
-        }
+        $this->validate($validator, 'Invalid input', 405);
 
         return $payload;
-    }
-
-
-    public function validStatusQuery(Request $request): int
-    {
-        $petId = $request->query()->parameters['petId'] ?? '';
-
-        $this->validPetIdType($petId);
-        $this->validPetIdExists($petId);
-
-        return $petId;
     }
 
     private function validPetIdType(string $petId): void
@@ -80,18 +100,7 @@ class PetValidator
             ],
         );
 
-        if ($validator->fails()) {
-            throw new HttpResponseException(
-                response()->json(
-                    [
-                        'message' => 'Invalid ID supplied',
-                        'code' => 400,
-                        'errors' => $validator->errors(),
-                    ],
-                    400,
-                ),
-            );
-        }
+        $this->validate($validator, 'Invalid ID supplied', 400);
     }
 
     private function validPetIdExists(string $petId): void
@@ -105,30 +114,39 @@ class PetValidator
             ],
         );
 
-        if ($validator->fails()) {
-            throw new HttpResponseException(
-                response()->json(
-                    [
-                        'message' => 'Pet not found',
-                        'code' => 404,
-                        'errors' => $validator->errors(),
-                    ],
-                    400,
-                ),
-            );
-        }
+        $this->validate($validator, 'Pet not found', 404);
     }
 
-    private function readRequestData(Request $request): array
+    private function readRequestData(): array
     {
-        return match ($request->headers->get('content-type')) {
-            'application/json' => $request->getPayload()->all(),
+        return match ($this->request->headers->get('content-type')) {
+            'application/json' => $this->request->getPayload()->all(),
             'application/xml' => json_decode(
                 json_encode(
-                    new SimpleXMLElement($request->getContent())
+                    new SimpleXMLElement($this->request->getContent())
                 ),
                 true,
             ),
         };
+    }
+
+    private function validate(
+        MadeValidator $validator,
+        string $message,
+        int $statusCode,
+    ): void
+    {
+        if ($validator->fails()) {
+            throw new HttpResponseException(
+                response()->json(
+                    [
+                        'message' => $message,
+                        'code' => $statusCode,
+                        'errors' => $validator->errors(),
+                    ],
+                    $statusCode,
+                ),
+            );
+        }
     }
 }
