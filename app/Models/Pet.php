@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pet extends Model
 {
+    public $timestamps = false;
+
     protected $table = 'pets';
 
-    public $timestamps = false;
+    protected $with = ['category', 'tags', 'photoUrls.name'];
     
     public function category(): BelongsTo
     {
