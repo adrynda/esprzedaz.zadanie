@@ -3,6 +3,7 @@
 namespace App\Validators;
 
 use App\Enums\PetStatusEnum;
+use App\DTOs\PetCustomUpdateDTO;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as MadeValidator;
 use Illuminate\Validation\Rule;
@@ -53,6 +54,25 @@ class PetValidator
         return $this->validPetId();
     }
 
+    public function validCustomUpdate(): PetCustomUpdateDTO
+    {
+        $petId = $this->validPetId();
+
+        $payload = $this->readRequestData();
+
+        $validator = Validator::make(
+            $payload,
+            [
+                'name' => 'string',
+                'status' => [Rule::in(PetStatusEnum::cases())],
+            ],
+        );
+
+        $this->validate($validator, 'Invalid input', 405);
+
+        return new PetCustomUpdateDTO($petId, $payload);
+    }
+
     private function validPetId(): int
     {
         $petId = $this->request->route()->parameters['petId'] ?? '';
@@ -76,6 +96,7 @@ class PetValidator
             $payload,
             [
                 'category.id' => 'required|int|exists:categories,id',
+                'name' => 'required|string',
                 'tags.*.id' => 'required|int|exists:tags,id',
                 'status' => ['required', Rule::in(PetStatusEnum::cases())],
             ],
@@ -119,15 +140,15 @@ class PetValidator
 
     private function readRequestData(): array
     {
-        return match ($this->request->headers->get('content-type')) {
-            'application/json' => $this->request->getPayload()->all(),
-            'application/xml' => json_decode(
+        if ($this->request->headers->get('content-type') == 'application/xml') {
+            return json_decode(
                 json_encode(
                     new SimpleXMLElement($this->request->getContent())
                 ),
                 true,
-            ),
-        };
+            );
+        }
+        return $this->request->getPayload()->all();
     }
 
     private function validate(

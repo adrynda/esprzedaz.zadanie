@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\PetStatusEnum;
+use App\DTOs\PetCustomUpdateDTO;
 use App\Models\Category;
 use App\Models\Pet;
 use App\Models\Tag;
@@ -33,6 +34,23 @@ class PetService
         $pet = Pet::find($payload['id']);
         
         $this->fillPetModel($pet, $payload);
+
+        return $pet;
+    }
+
+    public function customUpdate(PetCustomUpdateDTO $petCustomUpdateDTO): Pet
+    {
+        $pet = Pet::find($petCustomUpdateDTO->id);
+
+        if (isset($petCustomUpdateDTO->payload['name'])) {
+            $pet->name = $petCustomUpdateDTO->payload['name'];
+        }
+
+        if (isset($petCustomUpdateDTO->payload['status'])) {
+            $pet->status = PetStatusEnum::from($petCustomUpdateDTO->payload['status'])->value;
+        }
+        
+        $pet->save();
 
         return $pet;
     }

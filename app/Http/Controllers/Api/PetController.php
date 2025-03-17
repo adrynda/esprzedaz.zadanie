@@ -57,7 +57,12 @@ class PetController
 
     public function customUpdate()
     {
-        //
+        return response()->json(
+            $this->petService->customUpdate(
+                $this->petValidator->validCustomUpdate(),
+            ),
+            200,
+        );
     }
 
     public function destroy()
