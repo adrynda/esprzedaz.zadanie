@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PhotoUrlService
 {
-    private const PHOTOS_DIRECTORY = 'pets/photos';
+    private const PHOTOS_DIRECTORY = './pets/photos';
 
     public function uploadImage(PetUploadImageDTO $petUploadImageDTO): PhotoUrl
     {
@@ -19,7 +19,7 @@ class PhotoUrlService
         if (!empty($petUploadImageDTO->additionalMetadta)) {
             $photoUrl->additional_metadta = $petUploadImageDTO->additionalMetadta;
         }
-        
+        d($photoUrl);
         $photoUrl->save();
 dd('asd');
         return $photoUrl;
@@ -29,6 +29,7 @@ dd('asd');
     {
         $destinationPath = self::PHOTOS_DIRECTORY . '/' . $petUploadImageDTO->petId;
         $petUploadImageDTO->file->move($destinationPath, $petUploadImageDTO->file->getClientOriginalName());
+        dd('asd');
         return $destinationPath . '/' . $petUploadImageDTO->file->getClientOriginalName();
     }
 }
