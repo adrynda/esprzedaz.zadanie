@@ -21,6 +21,10 @@ class PetValidator
 
     public function validFindByStatusQuery(): PetStatusEnum
     {
+        $this->validateContentType(
+            availableAccept: ['application/json', 'application/xml'],
+        );
+
         $query = $this->request->query();
 
         $validator = Validator::make(
@@ -37,6 +41,10 @@ class PetValidator
 
     public function validFindByTagsQuery(): array
     {
+        $this->validateContentType(
+            availableAccept: ['application/json', 'application/xml'],
+        );
+        
         $tags = array_filter(
             explode(
                 ',',
@@ -60,16 +68,27 @@ class PetValidator
 
     public function validStore(): array
     {
+        $this->validateContentType(
+            ['application/json', 'application/xml'],
+            ['application/json', 'application/xml'],
+        );
         return $this->validPayload();
     }
 
     public function validUpdate(): array
     {
+        $this->validateContentType(
+            ['application/json', 'application/xml'],
+            ['application/json', 'application/xml'],
+        );
         return $this->validPayload(true);
     }
 
     public function validShow(): int
     {
+        $this->validateContentType(
+            availableAccept: ['application/json', 'application/xml'],
+        );
         return $this->validPetId();
     }
 
@@ -80,6 +99,10 @@ class PetValidator
 
     public function validCustomUpdate(): PetCustomUpdateDTO
     {
+        $this->validateContentType(
+            ['multipart/form-data'],
+            ['application/json', 'application/xml'],
+        );
         $petId = $this->validPetId();
         $payload = $this->readRequestData();
 
@@ -98,6 +121,7 @@ class PetValidator
 
     public function validUploadImage(): PetUploadImageDTO
     {
+        $this->validateContentType(['multipart/form-data'], ['application/json']);
         $petId = $this->validPetId();
         $payload = $this->readRequestData();
         $files = $this->request->files->all();
@@ -215,5 +239,24 @@ class PetValidator
                 ),
             );
         }
+    }
+
+    private function validateContentType(
+        array $availableContentTypes = [],
+        array $availableAccept = [],
+    ): void
+    {
+        $validator = Validator::make(
+            [
+                'content-type' => current(explode(';', $this->request->headers->get('content-type'))),
+                'accept' => $this->request->headers->get('accept', '*/*'),
+            ],
+            [
+                'content-type' => [Rule::in($availableContentTypes)],
+                'accept' => ['required', Rule::in(array_merge($availableAccept, ['*/*']))],
+            ],
+        );
+
+        $this->validate($validator, 'Unsupported Media Type', 415);
     }
 }
