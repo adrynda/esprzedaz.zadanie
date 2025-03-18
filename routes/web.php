@@ -25,6 +25,10 @@ Route::get('/pet/new', function () use ($formSelectsData) {
     return view('pets.new', $formSelectsData);
 });
 
+Route::get('/pet/{id}', function (int $id) use ($formSelectsData) {
+    return view('pets.edit', array_merge($formSelectsData, ['id' => $id]));
+});
+
 
 
 

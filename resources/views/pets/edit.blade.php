@@ -2,101 +2,60 @@
 @section('content')
 
      <form>
-        <div class="form-group">
-            <label for="email">Email address:</label>
-            <input type="email" class="form-control" id="email">
+        <div class="mb-3 mt-3">
+            <label class="form-label" for="name"><?= __('Name') ?>:</label>
+            <input type="text" class="form-control" id="name">
         </div>
-        <div class="form-group">
-            <label for="pwd">Password:</label>
-            <input type="password" class="form-control" id="pwd">
+        <div class="mb-3 mt-3">
+            <label class="form-label" for="category"><?= __('Category') ?>:</label>
+            <select class="form-control" id="category">
+                <? foreach($categories as $category): ?>
+                    <option value="<?= $category->id ?>"><?= $category->name ?></option>
+                <? endforeach ?>
+            </select>
         </div>
-        <div class="checkbox">
-            <label><input type="checkbox"> Remember me</label>
+        <div class="mb-3 mt-3">
+            <label class="form-label" for="status"><?= __('Status') ?>:</label>
+            <select class="form-control" id="status">
+                <? foreach($petStatuses as $petStatus): ?>
+                    <option value="<?= $petStatus->value ?>"><?= $petStatus->value ?></option>
+                <? endforeach ?>
+            </select>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <div class="mb-3 mt-3">
+            <label class="form-label" for="status"><?= __('Tags') ?>:</label>
+            <select class="form-control" id="tags" multiple>
+                <? foreach($tags as $tag): ?>
+                    <option value="<?= $tag->id ?>"><?= $tag->name ?></option>
+                <? endforeach ?>
+            </select>
+        </div>
+        <button id="submit" type="submit" class="btn btn-primary"><?= __('Submit') ?></button>
     </form> 
 
     <script>
-        getList();
+        loadPet();
         
-        function getList()
-        {
-            $.get(
-                'api/pet/findByStatus?status=available',
-                function (data, status) {
-                    loadList(data);
-                }
-            );
-        }
+        document.getElementById("submit").addEventListener("click", function(event){
+            event.preventDefault();
+            save();
+        });
 
-        function loadList(pets)
-        {
-            $('tbody#list').html(null);
-            pets.forEach(function (pet) {
-                $('tbody#list').append(prepareRowHtml(pet));
-            });
-        }
-
-        function prepareRowHtml(pet)
-        {
-            const tr = document.createElement('tr');
-            
-            tr.appendChild(prepareTd(pet.name));
-            tr.appendChild(prepareTd(pet.id));
-            tr.appendChild(prepareTd(pet.status));
-            tr.appendChild(prepareButtons(pet));
-            return tr;
-        }
-
-        function prepareTd(value)
-        {
-            const td = document.createElement('td');
-            // td.appendChild(value);
-            td.innerText = value;
-            return td;
-        }
-
-        function prepareButtons(pet)
-        {
-            const td = document.createElement('td');
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Edit') ?>', 'pet/' + pet.id));
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Upload image') ?>', 'pet/' + pet.id + '/uploadImage'));
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Custom update') ?>', 'pet/' + pet.id + '/customUpdate'));
-            td.appendChild(prepareDeleteButton(pet.id));
-            return td;
-        }
-
-        function prepareLink(cssClasses, label, url)
-        {
-            const a = document.createElement('a');
-            a.className = cssClasses;
-            a.innerText = label;
-            a.href = url;
-            return a;
-        }
-
-        function prepareDeleteButton(id)
-        {
-            const button = document.createElement('button');
-            button.className = 'btn btn-danger';
-            button.innerText = '<?= __('Delete') ?>';
-            button.onclick = function () {
-                remove(this.dataset.id);
-            };
-            button.dataset.id = id;
-            return button;
-        }
-
-        function remove(id)
+        function loadPet()
         {
             $.ajax({
-                url: 'api/pet/' + id,
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                type: 'DELETE',
+                url: '{{ url('api/pet/' . $id) }}',
+                type: 'GET',
                 success: function (result) {
-                    getList();
+                    $('#name').val(result.name);
+                    $('#category').val(result.category.id);
+                    $('#status').val(result.status);
+
+                    const tagsIds = [];
+                    result.tags.forEach((tag) => {
+                        tagsIds.push(tag.id);
+                    });
+                    $('#tags').val(tagsIds);
                 },
                 error: function (result) {
                     displayRequestError(result.responseJSON);
@@ -104,9 +63,44 @@
             });
         }
 
+        function save()
+        {
+            $.ajax({
+                url: '{{ url('api/pet') }}',
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                data: {
+                    "id": {{ $id }},
+                    "name": $('#name').val(),
+                    "category": {
+                        "id": $('#category').val()
+                    },
+                    "status": $('#status').val(),
+                    "tags": getTags()
+                },
+                type: 'PUT',
+                success: function (result) {
+                    window.location = '{{ url('pet') }}';
+                },
+                error: function (result) {
+                    displayRequestError(result.responseJSON);
+                }
+            });
+        }
+
+        function getTags()
+        {
+            const tags = [];
+            $('#tags').val().forEach(element => {
+                tags.push({"id": element});
+            });
+            return tags;
+        }
+
         function displayRequestError(errorResponseJSON)
         {
-            // gdybym miał więcej czasu użyłbym BS5 modala
+            // gdybym miał więcej czasu podświetliłbym pola
             alert(errorResponseJSON.message);
         }
     </script>
