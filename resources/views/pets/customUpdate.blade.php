@@ -59,12 +59,6 @@
                 }
             });
         }
-
-        function displayRequestError(errorResponseJSON)
-        {
-            // gdybym miał więcej czasu podświetliłbym pola
-            alert(errorResponseJSON.message);
-        }
     </script>
     
 @endsection

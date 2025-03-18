@@ -107,12 +107,6 @@
                 }
             });
         }
-
-        function displayRequestError(errorResponseJSON)
-        {
-            // gdybym miał więcej czasu użyłbym BS5 modala
-            alert(errorResponseJSON.message);
-        }
     </script>
     
 @endsection

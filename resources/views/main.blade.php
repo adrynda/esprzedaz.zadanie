@@ -27,8 +27,34 @@
                 </li>
             </ul>
         </nav>
+        <div class="container mt-3" id="alert-box"></div>
         <div class="container mt-5">
             @yield("content")
         </div>
+        <script>
+            function displayRequestError(errorResponseJSON)
+            {
+                const div = document.createElement('div');
+                div.className = 'alert alert-danger alert-dismissible';
+
+                const button = document.createElement('button');
+                button.className = 'btn-close';
+                button.setAttribute('data-bs-dismiss', 'alert');
+
+                const h4 = document.createElement('h4');
+                h4.innerText = errorResponseJSON.code + ' ' + errorResponseJSON.message;
+
+                div.appendChild(button);
+                div.appendChild(h4);
+
+                Object.values(errorResponseJSON.errors).forEach((fieldErrors) => {
+                    const p = document.createElement('p');
+                    p.innerText = fieldErrors.join(' ');
+                    div.appendChild(p);
+                });
+                
+                $('#alert-box').html(div);
+            }
+        </script>
     </body>
 </html>
