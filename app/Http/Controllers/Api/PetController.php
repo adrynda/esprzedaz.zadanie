@@ -6,6 +6,7 @@ use App\Services\PetService;
 use App\Services\PhotoUrlService;
 use App\Validators\PetValidator;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class PetController
 {
@@ -16,9 +17,9 @@ class PetController
     ) {
     }
 
-    public function findByStatus()
+    public function findByStatus(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->findByStatus(
                 $this->petValidator->validFindByStatusQuery(),
             ),
@@ -29,9 +30,9 @@ class PetController
     /**
      * @deprecated Takie oznaczenie widniało w dokumentacji
      */
-    public function findByTags()
+    public function findByTags(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->findByTags(
                 $this->petValidator->validFindByTagsQuery(),
             ),
@@ -39,9 +40,9 @@ class PetController
         );
     }
 
-    public function store()
+    public function store(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->create(
                 $this->petValidator->validStore(),
             ),
@@ -49,9 +50,9 @@ class PetController
         );
     }
 
-    public function show()
+    public function show(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->getById(
                 $this->petValidator->validShow(),
             ),
@@ -59,9 +60,9 @@ class PetController
         );
     }
 
-    public function update()
+    public function update(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->update(
                 $this->petValidator->validUpdate(),
             ),
@@ -69,9 +70,9 @@ class PetController
         );
     }
 
-    public function uploadImage(PhotoUrlService $photoUrlService)
+    public function uploadImage(PhotoUrlService $photoUrlService): Response
     {
-        return response()->json(
+        return $this->response(
             $photoUrlService->uploadImage(
                 $this->petValidator->validUploadImage(),
             ),
@@ -79,9 +80,9 @@ class PetController
         );
     }
 
-    public function customUpdate()
+    public function customUpdate(): Response
     {
-        return response()->json(
+        return $this->response(
             $this->petService->customUpdate(
                 $this->petValidator->validCustomUpdate(),
             ),
@@ -89,11 +90,22 @@ class PetController
         );
     }
 
-    public function destroy()
+    public function destroy(): Response
     {
         $this->petService->remove(
             $this->petValidator->validDestroy(),
         );
-        return response()->json(null, 204);
+        return $this->response();
+    }
+
+    private function response(
+        mixed $responseData = null,
+        int $statusCode = 204,
+    ): Response {
+        if ($this->request->headers->get('accept') === 'application/xml') {
+            return response()->xml($responseData, $statusCode);
+        }
+
+        return response()->json($responseData, $statusCode);
     }
 }
