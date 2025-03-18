@@ -1,20 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Api\PetController;
 
+use App\Models\Category;
+use App\Enums\PetStatusEnum;
+use App\Models\Tag;
+
+$formSelectsData = [
+    'categories' => Category::all(),
+    'petStatuses' => PetStatusEnum::cases(),
+    'tags' => Tag::all(),
+];
+
 Route::get('/', function () {
-    return view('pets.index');
+    return redirect('/pet');
 });
 
 Route::get('/pet', function () {
     return view('pets.index');
 });
 
-Route::get('/pet/add', function () {
-    return view('pets.add');
+Route::get('/pet/new', function () use ($formSelectsData) {
+    return view('pets.new', $formSelectsData);
 });
+
+
+
+
 
 Route::get('/api/token', function () {
     return csrf_token(); 

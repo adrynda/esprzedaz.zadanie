@@ -7,8 +7,8 @@
                 <th><?= __('Name') ?></th>
                 <th><?= __('Category') ?></th>
                 <th><?= __('Status') ?></th>
-                <th>
-                    <a class="btn btn-success" href="{{ url('pet/add') }}"><?= __('Add') ?></a>
+                <th class="w-25 text-center">
+                    <a class="btn btn-success" href="{{ url('pet/new') }}"><?= __('Add') ?></a>
                 </th>
             </tr>
         </thead>
@@ -39,9 +39,9 @@
         function prepareRowHtml(pet)
         {
             const tr = document.createElement('tr');
-            
+            tr.className = 'w-100';
             tr.appendChild(prepareTd(pet.name));
-            tr.appendChild(prepareTd(pet.category_id));
+            tr.appendChild(prepareTd(pet.category.name));
             tr.appendChild(prepareTd(pet.status));
             tr.appendChild(prepareButtons(pet));
             return tr;
@@ -50,18 +50,23 @@
         function prepareTd(value)
         {
             const td = document.createElement('td');
-            // td.appendChild(value);
             td.innerText = value;
             return td;
         }
 
         function prepareButtons(pet)
         {
+            const div = document.createElement('div');
+            div.className = 'btn-group-vertical';
+            div.appendChild(prepareLink('btn btn-outline-primary', '<?= __('Edit') ?>', 'pet/' + pet.id));
+            div.appendChild(prepareLink('btn btn-outline-info', '<?= __('Upload image') ?>', 'pet/' + pet.id + '/uploadImage'));
+            div.appendChild(prepareLink('btn btn-outline-warning', '<?= __('Custom update') ?>', 'pet/' + pet.id + '/customUpdate'));
+            div.appendChild(prepareDeleteButton(pet.id));
+
             const td = document.createElement('td');
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Edit') ?>', 'pet/' + pet.id));
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Upload image') ?>', 'pet/' + pet.id + '/uploadImage'));
-            td.appendChild(prepareLink('btn btn-warning', '<?= __('Custom update') ?>', 'pet/' + pet.id + '/customUpdate'));
-            td.appendChild(prepareDeleteButton(pet.id));
+            td.className = 'text-center';
+            td.appendChild(div);
+
             return td;
         }
 
@@ -77,7 +82,7 @@
         function prepareDeleteButton(id)
         {
             const button = document.createElement('button');
-            button.className = 'btn btn-danger';
+            button.className = 'btn btn-outline-danger';
             button.innerText = '<?= __('Delete') ?>';
             button.onclick = function () {
                 remove(this.dataset.id);

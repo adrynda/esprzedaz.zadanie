@@ -86,6 +86,14 @@ class PetService
         $pet->status = PetStatusEnum::from($payload['status'])->value;
         $pet->save();
 
+        $this->setTags($pet, $payload);
+    }
+
+    private function setTags(Pet &$pet, array $payload): void
+    {
+        if (empty($payload['tags'])) {
+            return;
+        }
         $tagIds = [];
         foreach ($payload['tags'] as $tagPayload) {
             $tagIds[] = Tag::find($tagPayload['id'])?->id;

@@ -9,7 +9,7 @@
         <div class="mb-3 mt-3">
             <label class="form-label" for="category"><?= __('Category') ?>:</label>
             <select class="form-control" id="category">
-                <? foreach(App\Models\Category::all() as $category): ?>
+                <? foreach($categories as $category): ?>
                     <option value="<?= $category->id ?>"><?= $category->name ?></option>
                 <? endforeach ?>
             </select>
@@ -17,7 +17,7 @@
         <div class="mb-3 mt-3">
             <label class="form-label" for="status"><?= __('Status') ?>:</label>
             <select class="form-control" id="status">
-                <? foreach(App\Enums\PetStatusEnum::cases() as $petStatus): ?>
+                <? foreach($petStatuses as $petStatus): ?>
                     <option value="<?= $petStatus->value ?>"><?= $petStatus->value ?></option>
                 <? endforeach ?>
             </select>
@@ -25,7 +25,7 @@
         <div class="mb-3 mt-3">
             <label class="form-label" for="status"><?= __('Tags') ?>:</label>
             <select class="form-control" id="tags" multiple>
-                <? foreach(App\Models\Tag::all() as $tag): ?>
+                <? foreach($tags as $tag): ?>
                     <option value="<?= $tag->id ?>"><?= $tag->name ?></option>
                 <? endforeach ?>
             </select>

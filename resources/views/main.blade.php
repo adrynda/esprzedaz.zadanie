@@ -20,18 +20,12 @@
 
     </head>
     <body class="">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{{ url('') }}"><?= __('eSprzedaż - zadanie rekrutacyjne') ?></a>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('pet') }}">
-                        <i class="fas fa-user-md"></i>
-                        <span><?= __('Pets') ?></span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-center">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url('pet') }}"><?= __('Pets') ?></a>
+                </li>
+            </ul>
         </nav>
         <div class="container mt-5">
             @yield("content")
