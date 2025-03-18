@@ -29,6 +29,10 @@ Route::get('/pet/{id}', function (int $id) use ($formSelectsData) {
     return view('pets.edit', array_merge($formSelectsData, ['id' => $id]));
 });
 
+Route::get('/pet/{id}/customUpdate', function (int $id) use ($formSelectsData) {
+    return view('pets.customUpdate', ['id' => $id, 'petStatuses' => PetStatusEnum::cases()]);
+});
+
 
 
 

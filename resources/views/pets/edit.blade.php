@@ -23,7 +23,7 @@
             </select>
         </div>
         <div class="mb-3 mt-3">
-            <label class="form-label" for="status"><?= __('Tags') ?>:</label>
+            <label class="form-label" for="tags"><?= __('Tags') ?>:</label>
             <select class="form-control" id="tags" multiple>
                 <? foreach($tags as $tag): ?>
                     <option value="<?= $tag->id ?>"><?= $tag->name ?></option>
