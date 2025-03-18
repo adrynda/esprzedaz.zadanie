@@ -1,6 +1,22 @@
 @extends('main')
 @section('content')
 
+    <form class="mb-5">
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" autocomplete="off" placeholder="<?= __('Status') ?>" id="status" name="status" list="petStatuses">
+                <datalist id="petStatuses">
+                    <? foreach ($petStatuses as $petStatus): ?>
+                        <option value="<?= $petStatus->value ?>">
+                    <? endforeach ?>
+                </datalist>
+            </div>
+            <div class="col">
+                <button id="submit" type="submit" class="btn btn-primary"><?= __('Search') ?></button>
+            </div>
+        </div>
+    </form> 
+
     <table class="table table-striped table-sm table-hover table-responsive">
         <thead>
             <tr class="table-dark">
@@ -16,16 +32,29 @@
     </table>
 
     <script>
-        getList();
+        document.getElementById("submit").addEventListener("click", function(event){
+            event.preventDefault();
+            search();
+        }); 
 
-        function getList()
+        function search()
         {
-            $.get(
-                'api/pet/findByStatus?status=available',
-                function (data, status) {
-                    loadList(data);
+            clearAlertBox();
+            $.ajax({
+                url: '{{ url('api/pet/findByStatus') }}',
+                data: {
+                    "status": $('#status').val()
+                },
+                type: 'GET',
+                success: function (result) {
+                    console.log(result);
+                    
+                    loadList(result);
+                },
+                error: function (result) {
+                    displayRequestError(result.responseJSON);
                 }
-            );
+            });
         }
 
         function loadList(pets)

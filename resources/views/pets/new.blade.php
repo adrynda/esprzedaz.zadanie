@@ -48,10 +48,10 @@
                 },
                 data: {
                     "name": $('#name').val(),
-                    // "category": {
-                    //     "id": $('#category').val()
-                    // },
-                    // "status": $('#status').val(),
+                    "category": {
+                        "id": $('#category').val()
+                    },
+                    "status": $('#status').val(),
                     "tags": getTags()
                 },
                 type: 'POST',

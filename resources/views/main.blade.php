@@ -32,6 +32,11 @@
             @yield("content")
         </div>
         <script>
+            function clearAlertBox()
+            {
+                $('#alert-box').html(null);
+            }
+
             function displayRequestError(errorResponseJSON)
             {
                 const div = document.createElement('div');

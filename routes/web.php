@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 Route::get('/pet', function () {
-    return view('pets.index');
+    return view('pets.index', ['petStatuses' => PetStatusEnum::cases()]);
 });
 
 Route::get('/pet/new', function () use ($formSelectsData) {
