@@ -105,7 +105,6 @@ class PetValidator
         );
         $petId = $this->validPetId();
         $payload = $this->readRequestData();
-
         $validator = Validator::make(
             $payload,
             [
@@ -249,11 +248,11 @@ class PetValidator
         $validator = Validator::make(
             [
                 'content-type' => current(explode(';', $this->request->headers->get('content-type'))),
-                'accept' => $this->request->headers->get('accept', '*/*'),
+                'accept' => current(explode(',', $this->request->headers->get('accept', '*/*'))),
             ],
             [
                 'content-type' => [Rule::in($availableContentTypes)],
-                'accept' => ['required', Rule::in(array_merge($availableAccept, ['*/*']))],
+                'accept' => [Rule::in(array_merge($availableAccept, ['*/*']))],
             ],
         );
 

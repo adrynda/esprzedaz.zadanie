@@ -21,10 +21,13 @@
 
         function save(formData)
         {
+            clearAlertBox();
+
             $.ajax({
                 url: '{{ url('api/pet/' . $id . '/uploadImage') }}',
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-API-KEY": '{{ config('app.api_key') }}'
                 },
                 data: formData,
                 type: 'POST',

@@ -40,8 +40,12 @@
         function search()
         {
             clearAlertBox();
+            
             $.ajax({
                 url: '{{ url('api/pet/findByStatus') }}',
+                headers: {
+                    "X-API-KEY": '{{ config('app.api_key') }}'
+                },
                 data: {
                     "status": $('#status').val()
                 },
@@ -125,11 +129,12 @@
             $.ajax({
                 url: 'api/pet/' + id,
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-API-KEY": '{{ config('app.api_key') }}'
                 },
                 type: 'DELETE',
                 success: function (result) {
-                    getList();
+                    search();
                 },
                 error: function (result) {
                     displayRequestError(result.responseJSON);

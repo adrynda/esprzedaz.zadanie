@@ -41,19 +41,24 @@
 
         function save()
         {
+            clearAlertBox();
+
             $.ajax({
                 url: '{{ url('api/pet') }}',
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-API-KEY": '{{ config('app.api_key') }}'
                 },
-                data: {
+                data: JSON.stringify({
                     "name": $('#name').val(),
                     "category": {
                         "id": $('#category').val()
                     },
                     "status": $('#status').val(),
                     "tags": getTags()
-                },
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
                 type: 'POST',
                 success: function (result) {
                     window.location = '{{ url('pet') }}';

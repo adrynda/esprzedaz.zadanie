@@ -34,7 +34,9 @@
     </form> 
 
     <script>
-        loadPet();
+        $(document).ready(() => {
+            loadPet();
+        });
         
         document.getElementById("submit").addEventListener("click", function(event){
             event.preventDefault();
@@ -43,8 +45,13 @@
 
         function loadPet()
         {
+            clearAlertBox();
+            
             $.ajax({
                 url: '{{ url('api/pet/' . $id) }}',
+                headers: {
+                    "X-API-KEY": '{{ config('app.api_key') }}'
+                },
                 type: 'GET',
                 success: function (result) {
                     $('#name').val(result.name);
@@ -65,12 +72,15 @@
 
         function save()
         {
+            clearAlertBox();
+
             $.ajax({
                 url: '{{ url('api/pet') }}',
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-API-KEY": '{{ config('app.api_key') }}'
                 },
-                data: {
+                data: JSON.stringify({
                     "id": {{ $id }},
                     "name": $('#name').val(),
                     "category": {
@@ -78,7 +88,9 @@
                     },
                     "status": $('#status').val(),
                     "tags": getTags()
-                },
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
                 type: 'PUT',
                 success: function (result) {
                     window.location = '{{ url('pet') }}';
