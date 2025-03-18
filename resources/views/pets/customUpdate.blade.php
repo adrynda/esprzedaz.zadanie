@@ -4,11 +4,11 @@
      <form>
         <div class="mb-3 mt-3">
             <label class="form-label" for="name"><?= __('Name') ?>:</label>
-            <input type="text" class="form-control" id="name">
+            <input type="text" name="name" class="form-control" id="name">
         </div>
         <div class="mb-3 mt-3">
             <label class="form-label" for="status"><?= __('Status') ?>:</label>
-            <select class="form-control" id="status">
+            <select name="status" class="form-control" id="status">
                 <? foreach($petStatuses as $petStatus): ?>
                     <option value="<?= $petStatus->value ?>"><?= $petStatus->value ?></option>
                 <? endforeach ?>
@@ -20,9 +20,9 @@
     <script>
         loadPet();
         
-        document.getElementById("submit").addEventListener("click", function(event){
+        document.getElementsByTagName("form")[0]?.addEventListener("submit", function(event){
             event.preventDefault();
-            save();
+            save(new FormData(this));
         });
 
         function loadPet()
@@ -40,18 +40,17 @@
             });
         }
 
-        function save()
+        function save(formData)
         {
             $.ajax({
                 url: '{{ url('api/pet/' . $id) }}',
                 headers: {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
-                data: {
-                    "name": $('#name').val(),
-                    "status": $('#status').val()
-                },
+                data: formData,
                 type: 'POST',
+                processData: false,
+                contentType: false,
                 success: function (result) {
                     window.location = '{{ url('pet') }}';
                 },
