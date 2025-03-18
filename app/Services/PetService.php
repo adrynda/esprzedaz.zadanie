@@ -61,12 +61,12 @@ class PetService
 
     public function getById(int $id): Pet
     {
-        return Pet::getById($id);
+        return Pet::find($id);
     }
 
     public function remove(string $id): void
     {
-        $pet = Pet::getById($id);
+        $pet = Pet::find($id);
 
         foreach ($pet->photoUrls()->get() as $photoUrl) {
             if (file_exists($photoUrl->name)) {

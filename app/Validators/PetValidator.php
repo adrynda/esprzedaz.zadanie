@@ -105,7 +105,7 @@ class PetValidator
         $validator = Validator::make(
             array_merge($payload, $files),
             [
-                'additionalMetadata' => 'string',
+                'additionalMetadata' => 'nullable|string',
                 'file' => 'required|file',
             ],
         );

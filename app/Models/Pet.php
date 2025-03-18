@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +13,9 @@ class Pet extends Model
 
     protected $table = 'pets';
 
-    protected $with = ['category', 'tags', 'photoUrls.name'];
+    protected $with = ['category', 'tags'];
+
+    protected $appends = ['photoUrls'];
     
     public function category(): BelongsTo
     {
@@ -31,14 +32,8 @@ class Pet extends Model
         return $this->belongsToMany(Tag::class, 'pets_tags', 'pet_id', 'tag_id');
     }
 
-    public static function getById(int $id): self
+    public function getPhotoUrlsAttribute()
     {
-        $model = self::find($id);
-
-        if (empty($model)) {
-            throw new ModelNotFoundException();
-        }
-
-        return $model;
+        return $this->photoUrls()->pluck('name')->toArray();
     }
 }
